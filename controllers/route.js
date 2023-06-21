@@ -2,6 +2,7 @@
 const { Router } =require ("express");
 const data=require('../model/data')
 const { object, string, number,array } = require('yup');
+let handler=require("../middle_ware/handler");
 const router = Router();
 module.exports=router;
 
@@ -22,6 +23,11 @@ let userSchema = object({
     router.get('/products/:id',(req,res)=>{
     let {id}=req.params;  
     let filteredProduct=data.find(product=>product.id==id);
+    if(!filteredProduct)
+    {
+        throw new Error('not valid id');
+        return;
+    }
     res.send(filteredProduct);
     })
     
@@ -41,6 +47,12 @@ let userSchema = object({
         let {id}=req.params;
         let udatedDate=new Date();
         let filteredProductIndex=data.findIndex(product=>product.id==id);
+        let filteredProduct=data.find(product=>product.id==id);
+        if(!filteredProduct)
+        {
+            throw new Error("not valid id")
+            return;
+        }
         let updatedproduct={"id":Number(id),
         ...product,
         "creationAt":data[filteredProductIndex].creationAt,
@@ -53,6 +65,12 @@ let userSchema = object({
     router.delete('/products/:id',(req,res)=>{
         let {id}=req.params;
         let filteredProductIndex=data.findIndex(product=>product.id==id);
+        let filteredProduct=data.find(product=>product.id==id);
+        if(!filteredProduct)
+        {
+            throw new Error("not valid id")
+            return;
+        }
         data.splice(filteredProductIndex,1);
         res.send("true");
     })
